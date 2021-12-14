@@ -1,0 +1,136 @@
+
+<!-- JS依赖 -->
+<script src="live2d.min.js"></script>
+<script src="live2dcubismcore.min.js"></script>
+<script src="pixi.min.js"></script>
+<script src="index.min.js"></script>
+
+<script src="MyJs.js"></script>
+
+
+<!-- css文件 -->
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<!-- 画布 主体显示 -->
+<canvas id=canvas></canvas>
+
+<!-- 控制 -->
+<div id="control"></div>
+
+<!-- jS代码 -->
+<script>
+const cubism4Model = "model/贝奥武夫.model3.json";//模型路径 model3.json
+
+const live2d = PIXI.live2d;//优化的化的live2d SDK
+
+(async function main() {
+
+  const app = new PIXI.Application({
+    view: document.getElementById("canvas"),
+    autoStart: true,
+    resizeTo: window,
+    backgroundColor: 0x333333
+  });
+
+  const models = await Promise.all([
+    live2d.Live2DModel.from(cubism4Model)//可以多个载入
+  ]);
+
+  models.forEach((model) => {
+    app.stage.addChild(model);
+
+    const scaleX = (innerWidth * 0.8) / model.width;
+    const scaleY = (innerHeight * 0.8) / model.height;
+
+    // fit the window
+    model.scale.set(Math.min(scaleX, scaleY));
+
+    model.y = innerHeight * 0.1;
+
+    draggable(model);
+    addFrame(model);
+    addHitAreaFrames(model);
+  });
+
+  const model4 = models[0];//模型选择
+
+  //model4.x =(innerWidth - model2.width - model4.width) / 2;//x轴坐标
+  // handle tapping
+
+
+  model4.on("hit", (hitAreas) => {
+    if (hitAreas.includes("ArtMesh8")) {
+      model4.motion("Idle");
+    }
+
+    if (hitAreas.includes("ArtMesh7")) {
+      model4.motion("裤子");
+    }
+
+    if (hitAreas.includes("ArtMesh6")) {
+        model4.motion("穿回");
+    }
+
+    if (hitAreas.includes("地板")) {
+      model4.motion("Idle");
+    }
+  });
+})();
+
+function draggable(model) {
+  model.buttonMode = true;
+  model.on("pointerdown", (e) => {
+    model.dragging = true;
+    model._pointerX = e.data.global.x - model.x;
+    model._pointerY = e.data.global.y - model.y;
+  });
+  model.on("pointermove", (e) => {
+    if (model.dragging) {
+      model.position.x = e.data.global.x - model._pointerX;
+      model.position.y = e.data.global.y - model._pointerY;
+    }
+  });
+  model.on("pointerupoutside", () => (model.dragging = false));
+  model.on("pointerup", () => (model.dragging = false));
+}
+
+function addFrame(model) {
+  const foreground = PIXI.Sprite.from(PIXI.Texture.WHITE);
+  foreground.width = model.internalModel.width;
+  foreground.height = model.internalModel.height;
+  foreground.alpha = 0.2;
+
+  model.addChild(foreground);
+
+  checkbox("Model Frames", (checked) => (foreground.visible = checked));
+}
+
+function addHitAreaFrames(model) {
+  const hitAreaFrames = new live2d.HitAreaFrames();
+
+  model.addChild(hitAreaFrames);
+
+  checkbox("Hit Area Frames", (checked) => (hitAreaFrames.visible = checked));
+}
+
+function checkbox(name, onChange) {
+  const id = name.replace(/\W/g, "").toLowerCase();
+
+  let checkbox = document.getElementById(id);
+
+  if (!checkbox) {
+    const p = document.createElement("p");
+    p.innerHTML = `<input type="checkbox" id="${id}"> <label for="${id}">${name}</label>`;
+
+    document.getElementById("control").appendChild(p);
+    checkbox = p.firstChild;
+  }
+
+  checkbox.addEventListener("change", () => {
+    onChange(checkbox.checked);
+  });
+
+  onChange(checkbox.checked);
+}
+
+</script>
