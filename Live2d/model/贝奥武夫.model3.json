@@ -1,0 +1,53 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "贝奥武夫.moc3",
+		"Textures": [
+			"贝奥武夫.1024/texture_00.png"
+		],
+		"DisplayInfo": "贝奥武夫.cdi3.json",
+		"Motions": {
+			"Idle": [
+				{
+					"Name": "Idle",
+					"File": "motions/动动.motion3.json",
+					"FadeOut": 500,
+					"Ignorable": true,
+					"Interruptable": true
+				}
+			],
+			"裤子": [
+				{
+					"Name": "裤子",
+					"File": "motions/裤子.motion3.json",
+					"FadeOut": 500,
+					"Ignorable": true,
+					"Interruptable": true
+				}
+			],
+			"穿回": [
+				{
+					"Name": "穿回",
+					"File": "motions/穿回.motion3.json",
+					"FadeOut": 500,
+					"Ignorable": true,
+					"Interruptable": true
+				}
+			]
+		}
+	},
+	"HitAreas": [
+		{
+			"Name": "ArtMesh8",
+			"Id": "ArtMesh8"
+		},
+		{
+			"Name": "ArtMesh7",
+			"Id": "ArtMesh7"
+		},
+		{
+			"Name": "ArtMesh6",
+			"Id": "ArtMesh6"
+		}
+	]
+}
